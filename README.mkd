@@ -16,7 +16,9 @@ epr is written in Go and requires installed chromium. If you have Go 1.9
 or later installed and configured you can install epr with `go install`:
 
 ```
-▶ go install github.com/adanilovich/epr@latest
+▶ git clone github.com/adanilovich/epr
+▶ make build
+▶ build/bin/epr -h
 ```
 
 ## Detailed Usage
@@ -45,9 +47,9 @@ Usage of build/bin/epr:
   -o, --output-directory string   Resources directory (default "./reports")
 
 [ Examples ]
-pe https://domain.com/path 	Extract only virtual DOM and direct the result to stdout
-pe -ao myreports https://domain.com/path 	 Write all resources to myreports folder 
-pe -a https://domain.com/path 	 		   Write all resources to default folder 
+epr https://domain.com/path 	Extract only virtual DOM and direct the result to stdout
+epr -ao myreports https://domain.com/path 	 Write all resources to myreports folder 
+epr -a https://domain.com/path 	 		   Write all resources to default folder 
 ```
 
 ### Structure of output folder
