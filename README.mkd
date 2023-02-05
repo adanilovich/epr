@@ -1,6 +1,6 @@
 # EPR
 
-EPR allows to retrieve and save data for following processing through specific parsers.
+EPR allows to retrieve and save page resources for following processing through specific parsers.
 Extractable resources:
 - network connections performed by scripts of page(devtools>network)
 - data of local and session storage(devtools>application)
