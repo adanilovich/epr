@@ -1,0 +1,96 @@
+# EPR
+
+EPR allows to retrieve and save data for following processing through specific parsers.
+Extractable resources:
+- network connections performed by scripts of page(devtools>network)
+- data of local and session storage(devtools>application)
+- virtual DOM
+- files(js, css, svg)
+- intercepted headers, cookies, payloads of request/response
+
+All data keeps in grepable format for ease of search and parse.
+
+## Install
+
+epr is written in Go and requires installed chromium. If you have Go 1.9
+or later installed and configured you can install epr with `go install`:
+
+```
+▶ go install github.com/adanilovich/epr@latest
+```
+
+## Detailed Usage
+
+epr's help output tries to actually be helpful:
+
+```
+▶ epr -h
+-----
+[EPR] Extractor of page resources
+-----
+EPR allows to retrieve and save page resources to folder in grepable form for following processing ones through appropriate parsers.
+Types of resources:
+ * Virtual DOM
+ * Local/Session storage
+ * js/css/svg files
+ * intercepted data of requests/responses performed by page scripts. It works like devtools > network.
+
+It means that the data are kept in one place. It's useful for parsing e.g. to find all api-keys, jwt tokens, potential vulnerable input data like http parameters, cookies, headers etc.
+EPR works using chromium engine.
+
+-----
+Usage of build/bin/epr:
+  -a, --all-resources             Extract all resources from target page
+  -d, --disable-headless          Show browser
+  -o, --output-directory string   Resources directory (default "./reports")
+
+[ Examples ]
+pe https://domain.com/path 	Extract only virtual DOM and direct the result to stdout
+pe -ao myreports https://domain.com/path 	 Write all resources to myreports folder 
+pe -a https://domain.com/path 	 		   Write all resources to default folder 
+```
+
+### Structure of output folder
+
+```
+▶ ls -R reports
+./resources:
+	0ffbfda435a2b1cc55c4b5d8775efa38
+	3107f7b8eecf3dcf4acd8de244506fac
+index.txt
+fec7cddc-9e6b-4740-adb3-9abf50699558
+ff46f63f-5b3d-4c36-81dc-559a79951635
+...
+```
+
+The main file is index.txt, which keeps log of queries. Each row means request from target page.
+```
+▶ head -3 index.txt
+7a193cb6-0f8e-46bd-8857-f3da6659f462 GET https://www.google.com/search?q=why+cow+does+not+fly 200
+09b7d33d-31b5-4634-a990-bf7f6a5b8ded POST https://www.google.com/log?format=json&hasfast=true 200
+4b94231a-b451-4160-a8a1-c950186befb4 GET https://www.google.com/client_204?fsr=1.31 204
+```
+Where leftmost value is uuid(link) of report file.
+
+Let's look at truncated report
+```
+https://www.google.com/search?q=why+cow+does+not+fly
+
+GET
+> User-Agent: Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1
+...
+
+< Date: Sun, 05 Feb 2023 18:56:00 GMT
+< Set-Cookie: 1P_JAR=2023-02-05-18; expires=Tue, 07-Mar-2023 18:56:00 GMT; path=/; domain=.google.com; Secure; SameSite=none
+< Server: gws
+...
+
+local_storage: udla::ltp -> 1675623362609
+...
+session_storage: hsb;;1675623359545 -> p:*|l:0_[1675623359544]
+...
+
+virtual_dom
+// huge peace of text
+```
+There are number of sections here: local and session storage,  input/output headers and dom.
